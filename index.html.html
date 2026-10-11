@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You, With All My Heart 💗</title>
+<style>
+:root{--pink:#ff6f9f;--deep:#7d315d;--cream:#fff8fb;--ink:#4a2940}
+*{box-sizing:border-box}
+body{margin:0;font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:radial-gradient(circle at top,#ffe7f0,#fff8fb 55%,#fbe2ed);min-height:100vh;overflow-x:hidden}
+button{font:inherit;cursor:pointer;border:0;border-radius:999px;padding:13px 21px;background:linear-gradient(135deg,#ff79a8,#f14e8a);color:white;box-shadow:0 8px 20px #df5a8a33;transition:transform .2s,filter .2s}
+button:hover{transform:translateY(-2px);filter:brightness(1.04)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.wrap{width:min(760px,92vw);margin:0 auto;padding:28px 0 55px}
+.top{text-align:center;font:12px Arial,sans-serif;letter-spacing:3px;text-transform:uppercase;color:#b65d82}
+.progress{height:6px;background:#f4d6e3;border-radius:99px;margin:18px 0 28px;overflow:hidden}
+#bar{height:100%;width:0;background:linear-gradient(90deg,#ff8bb4,#b64d84);transition:width .4s}
+.card{background:#ffffffc9;border:1px solid #fff;box-shadow:0 18px 60px #a94c7620;border-radius:28px;padding:clamp(22px,5vw,42px);text-align:center;backdrop-filter:blur(10px);min-height:430px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.kicker{font:12px Arial,sans-serif;text-transform:uppercase;letter-spacing:2px;color:#c15d86}
+h1{font-size:clamp(32px,7vw,54px);line-height:1.08;margin:14px 0;color:#8d3c66;font-weight:normal}
+h2{font-size:clamp(25px,5vw,36px);font-weight:normal;color:#8d3c66;margin:10px 0 16px}
+p{font-size:18px;line-height:1.75;max-width:570px;margin:10px auto}
+.small{font:13px Arial,sans-serif;color:#a05b7b;line-height:1.6}
+.actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.soft{background:#fff;color:#9a426d;border:1px solid #f3c8da;box-shadow:none}
+.heart{font-size:58px;display:inline-block;animation:beat 1.3s infinite}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}}
+.float{position:fixed;bottom:-40px;pointer-events:none;z-index:0;animation:rise linear forwards;opacity:.7}
+@keyframes rise{to{transform:translateY(-115vh) rotate(30deg);opacity:0}}
+.card>*{position:relative;z-index:1}
+.hidden{display:none!important}
+.puzzle{background:#fff2f7;border:1px solid #f6d0df;border-radius:18px;padding:18px;width:min(100%,500px);margin:16px auto}
+.choices{display:grid;gap:10px;margin-top:14px}
+.choices button{background:white;color:#8d3c66;border:1px solid #f0c4d7;box-shadow:none;border-radius:14px}
+.choices button.correct{background:#e7f7e9;border-color:#a9d8b0;color:#27633a}
+.choices button.wrong{background:#fff0f0;border-color:#f0b4b4;color:#9c3b3b}
+input[type=text]{width:min(100%,340px);padding:13px 15px;border:1px solid #e9b8ce;border-radius:12px;font-size:17px;text-align:center;outline-color:#e56d9d;background:#fff}
+.letter{text-align:left;background:#fffafc;border:1px solid #f6d7e4;border-radius:18px;padding:clamp(18px,4vw,30px);max-height:54vh;overflow:auto}
+.letter p{font-size:17px;margin:0 0 14px}
+.seal{font-size:45px}
+footer{text-align:center;font:12px Arial,sans-serif;color:#b26a8b;margin-top:20px}
+#toast{min-height:26px;color:#a33e6d;font:14px Arial,sans-serif;margin-top:10px}
+.confetti{position:fixed;top:-15px;width:8px;height:12px;z-index:10;animation:fall 3.5s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(600deg);opacity:0}}
+@media(max-width:500px){.card{min-height:470px}p{font-size:17px}.wrap{padding-top:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">a little place made only for you ♡</div>
+  <div class="progress"><div id="bar"></div></div>
+  <main class="card" id="screen" aria-live="polite"></main>
+  <footer>made with love, honesty, and a very hopeful heart ♡</footer>
+</div>
+<script>
+const screen=document.getElementById('screen');
+const bar=document.getElementById('bar');
+let step=0, puzzleSolved=[false,false,false];
+const total=7;
+
+function render(){
+  bar.style.width=(step/(total-1)*100)+'%';
+  const pages=[
+`<div class="kicker">before anything else</div><div class="heart">💗</div><h1>Hey, my love.</h1><p>I made this little website for you because there are a few things I want to say properly. Take your time going through it, okay? ❤️</p><p class="small">I just wanted to do something a little different for you. I hope it makes you smile, even a little.</p><div class="actions"><button onclick="next()">Open my heart →</button></div>`,
+`<div class="kicker">little puzzle 01 · warm-up</div><h2>Can you unlock the first heart?</h2><p>Which of these is the most important part of a sincere apology?</p><div class="puzzle"><div class="choices"><button onclick="answer(0,0)">Making excuses so everything sounds okay</button><button onclick="answer(0,1)">Taking responsibility and listening properly</button><button onclick="answer(0,2)">Expecting forgiveness straight away</button></div><div id="feedback" class="small"></div></div><p class="small">Hint: an apology is about understanding the other person's feelings, not winning an argument.</p><div class="actions"><button id="continue" disabled onclick="next()">Unlock the next step →</button></div>`,
+`<div class="kicker">little puzzle 02 · a tiny code</div><h2>Decode this for me 💌</h2><p>Each heart stands for one letter. Read the first letter of each word:</p><div class="puzzle"><h1 style="font-size:34px">Always · Listen · Own it · Value · Every feeling</h1><p class="small">A · L · O · V · E</p><p>What word do those first letters make?</p><input id="code" type="text" placeholder="Type the word here" autocomplete="off"><div class="actions"><button onclick="checkCode()">Unlock</button></div><div id="codefeedback" class="small"></div></div><div class="actions"><button id="continue" disabled onclick="next()">Keep going →</button></div>`,
+`<div class="kicker">little puzzle 03 · choose with your heart</div><h2>One last little choice</h2><p>If someone you love shares something important and you don't respond the way they hoped, what matters most afterwards?</p><div class="puzzle"><div class="choices"><button onclick="answer(2,0)">Pretend it wasn't a big deal</button><button onclick="answer(2,1)">Tell them their reaction is too much</button><button onclick="answer(2,2)">Acknowledge the hurt, apologise, and do better next time</button></div><div id="feedback" class="small"></div></div><div class="actions"><button id="continue" disabled onclick="next()">Read what I need to say →</button></div>`,
+`<div class="kicker">from the bottom of my heart</div><div class="heart">🥺</div><h2>I'm genuinely sorry.</h2><p>I know you posted that picture on your story and I didn't react the way you wanted me to. I get why that hurt you, and I'm really sorry. You wanted me to make you feel special, and I didn't do that in that moment.</p><p>I'm sorry, jaan. You deserved a reaction that made you feel loved and appreciated, especially from me. I hate that I made you feel otherwise.</p><div class="actions"><button onclick="next()">There's more I want you to know →</button></div>`,
+`<div class="kicker">a letter, just for you</div><h2>Please read this when you're ready</h2><div class="letter"><p>My love,</p><p>I'm really sorry about how I reacted to your picture. I know you probably wanted me to be excited, to compliment you, and to make you feel pretty and loved. Instead, I let you down, and I understand why you're upset with me.</p><p>I didn't show you what I was feeling properly, and I understand why that upset you. I'm not going to make excuses or tell you not to feel bad about it. I hurt your feelings, even if that wasn't what I wanted, and I'm genuinely sorry.</p><p>I wish I'd reacted in a way that made you smile and maybe blush a little. I should've made you feel beautiful and reminded you how much I adore you. You deserved that from me, and I'm sorry I didn't give you that feeling.</p><p>You shouldn't have to pretend it didn't hurt just because I didn't react properly. If something matters to you, I want it to matter to me too. Even something as simple as a picture you post means something when it's you, and I should've treated that moment with more love.</p><p>I'm not asking you to stop being mad instantly, and I'm not expecting a website or a message to magically fix everything. I just want to own my mistake and tell you that I'm sorry, wholeheartedly. I want to be more thoughtful, show my affection more openly, and make my actions match the love I say I have for you.</p><p>I love you, and I want you to feel that in the little things too. When you're ready, I'd really like another chance to make you smile and give you the kind of reaction and affection you wanted from me when you posted that picture.</p><p>I'm sorry, jaan. I wish I could take back that moment and give you the reaction you were hoping for. I know saying sorry isn't enough on its own, so I want to show you better next time. You mean so much to me, and I never want you to doubt that.</p><p>With all my love,<br><strong>your imperfect boy, who is still learning to love you better ♡</strong></p></div><div class="actions"><button onclick="next()">One last thing… 💗</button></div>`,
+`<div class="kicker">the last little page</div><div class="seal">💌</div><h1>Can I try again?</h1><p>I can't change how I reacted that time, but I can try harder from now on. You don't have to forgive me straight away. I just hope you'll let me make it up to you and show you how special you are to me.</p><p><strong>You are important to me. Your words are important to me. And I'm sorry I didn't make that clear.</strong></p><div class="actions"><button onclick="hearts()">A little hug, from me to you ♡</button><button class="soft" onclick="showNote()">Open your hidden note</button></div><div id="hiddenNote" class="hidden"><p style="margin-top:22px;color:#a33e6d">If I could be beside you right now, I'd hold your hand, look at you properly, and say it again: I'm sorry, my love. I'm here, and I'm listening. ❤️</p></div><div id="toast"></div>`
+  ];
+  screen.innerHTML=pages[step];
+}
+function next(){if(step<total-1){step++;render();window.scrollTo({top:0,behavior:'smooth'});if(step===total-1)confetti();}}
+function answer(which,choice){
+ const fb=document.getElementById('feedback'), btn=document.getElementById('continue');
+ const correct=(which===0&&choice===1)||(which===2&&choice===2);
+ if(correct){fb.textContent='That’s it. Understanding comes before expecting forgiveness. 💗';puzzleSolved[which]=true;btn.disabled=false;
+   [...screen.querySelectorAll('.choices button')].forEach(b=>b.disabled=true);
+   event.target.classList.add('correct');
+ }else{fb.textContent='Not quite, try again. Think about what helps someone feel heard.';event.target.classList.add('wrong');}
+}
+function checkCode(){
+ const input=document.getElementById('code').value.trim().toUpperCase(), fb=document.getElementById('codefeedback'), btn=document.getElementById('continue');
+ if(input==='ALOVE'||input==='LOVE'){fb.textContent='Unlocked! The little reminder is LOVE, and love means listening, too. 💗';btn.disabled=false;}
+ else{fb.textContent='Almost! The first letters spell ALOVE. Try LOVE if you want the simple answer.';}
+}
+function showNote(){document.getElementById('hiddenNote').classList.remove('hidden');hearts(12);}
+function hearts(count=24){
+ for(let i=0;i<count;i++){const e=document.createElement('span');e.className='float';e.textContent=['💗','💕','♡','💖','🌸'][Math.floor(Math.random()*5)];e.style.left=Math.random()*100+'vw';e.style.fontSize=(16+Math.random()*24)+'px';e.style.animationDuration=(4+Math.random()*4)+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),8500);}
+ document.getElementById('toast').textContent='A little hug is on its way. No pressure, just love. ♡';
+}
+function confetti(){for(let i=0;i<55;i++){const e=document.createElement('i');e.className='confetti';e.style.left=Math.random()*100+'vw';e.style.background=['#ff6f9f','#f7c5d8','#c77ca4','#ffd76d','#d9a6ec'][i%5];e.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),4500);}}
+render();
+</script>
+</body>
+</html>
